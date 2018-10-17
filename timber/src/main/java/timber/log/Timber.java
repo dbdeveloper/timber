@@ -512,7 +512,8 @@ public final class Timber {
 
     /** Return whether a message at {@code priority} or {@code tag} should be logged. */
     protected boolean isLoggable(@Nullable String tag, int priority) {
-      return true;
+      //noinspection deprecation
+      return isLoggable(priority);
     }
 
     protected void formatLog(
