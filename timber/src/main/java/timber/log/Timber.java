@@ -307,8 +307,8 @@ public final class Timber {
           }
           tree.formatLog(tag, priority, t, msg);
         }
+        tree.removeExplicitTag();
       }
-      removeExplicitTag();
     }
 
     @Override
@@ -552,10 +552,9 @@ public final class Timber {
     protected void prepareLog(int priority, Throwable t, String message, Object... args) {
       // Consume tag even when message is not loggable so that next message is correctly tagged.
       String tag = getTag();
-      if (!isLoggable(tag, priority)) {
-        return;
+      if (isLoggable(tag, priority)) {
+        formatLog(tag, priority, t, message, args);
       }
-      formatLog(tag, priority, t, message, args);
       removeExplicitTag();
     }
 
@@ -567,17 +566,16 @@ public final class Timber {
       // Consume tag even when message is not loggable so that next message is correctly tagged.
       String tag = getTag();
       String msg;
-      if (!isLoggable(tag, priority)) {
-        return;
+      if (isLoggable(tag, priority)) {
+        try {
+          msg = message.message();
+        } catch (Throwable e) {
+          priority = Log.ASSERT;
+          t = e;
+          msg = "in-log error:";
+        }
+        formatLog(tag, priority, t, msg);
       }
-      try {
-        msg = message.message();
-      } catch (Throwable e) {
-        priority = Log.ASSERT;
-        t = e;
-        msg = "in-log error:";
-      }
-      formatLog(tag, priority, t, msg);
       removeExplicitTag();
     }
 
